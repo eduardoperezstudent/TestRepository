@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  MyHostedZone:
+    Type: 'AWS::Route53::HostedZone'
+    Properties:
+      Name: "aplawofc.net"
+
+  MXRecordSet:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: "aplawofc.net."
+      Type: "MX"
+      TTL: "300"
+      ResourceRecords:
+        - "1 aspmx.l.google.com."
+        - "5 alt1.aspmx.l.google.com."
+        - "5 alt2.aspmx.l.google.com."
+        - "10 alt3.aspmx.l.google.com."
+        - "10 alt4.aspmx.l.google.com."
+
+  TXTRecordSetSPF:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: "aplawofc.net."
+      Type: "TXT"
+      TTL: "300"
+      ResourceRecords:
+        - '"v=spf1 include:_spf.google.com ~all"'
+
+  TXTRecordSetDKIM:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: "google._domainkey.aplawofc.net."
+      Type: "TXT"
+      TTL: "300"
+      ResourceRecords:
+        - |
+          "v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoXql+pAcnt9ImN93HI4oqDZt/"
+        - |
+          "KXNvZLyNNZYCIc4Sl8jH2uE6iUZrFaaKqbwy22IbOcws3vZWYkOgOB8yK6KVYTw18R1Fda5KBXojlCx8X3Eya27dK/"
+        - |
+          "w7tcibWBCbvrJzVTE2+3CYbE/JNjzAQpx3ypeJhbEG+bpSdz3UMAI6eguUoWpeI0zse+nT1MiWGVs+V0XhJh0bI677"
+        - |
+          "Yj5xnJL27vCnn41OeDfKfQ7EGZ81b03TkqVDuTFIkbUrNQRbCWZTI+VtKlsrXgldGqus7EYmvwUfZslscRtkPGpdCW"
+        - |
+          "bjasIjtXdqi1hnTfQ8WzoqIKuzQL4T7jQb2aZMHJjrRpxqwIDAQAB"
+
+  AliasRecordSetWWW:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: "www.aplawofc.net."
+      Type: "A"
+      AliasTarget:
+        HostedZoneId: "Z3BJ6K6RIION7M"  # HostedZoneId for S3 static website
+        DNSName: "s3-website-us-west-2.amazonaws.com."
+        EvaluateTargetHealth: false
+
+  CNAMERecordSetGoogleVerification:
+    Type: 'AWS::Route53::RecordSet'
+    Properties:
+      HostedZoneId: !Ref MyHostedZone
+      Name: "nijw6o2hdz.aplawofc.net."
+      Type: "CNAME"
+      TTL: "300"
+      ResourceRecords:
+        - "gv-wurxvsgtv2c2hc.dv.googlehosted.com"
+
